@@ -30,21 +30,16 @@ router.post('/books', (req, res, next) => {
  
 //  GET /api/books -  Retrieves all of the books
 //  GET /api/books/:bookId -  Retrieves a specific book by id
-router.get('/books/:bookId', (req, res, next) => {
-    const { bookId } = req.params;
-   
+//  GET /api/books -  Retrieves all of the books
+router.get('/books', (req, res, next) => {
     prisma.book
-      .findUnique({ where: { id: bookId }, include: { author: true } }) // <== UPDATE
-      .then(book => {
-        if (!book) {
-          res.status(404).json({ message: 'Book not found' });
-        } else {
-          res.json(book);
-        }
+      .findMany({ include: { Author: true } }) // <== UPDATE
+      .then(allBooks => {
+        res.json(allBooks);
       })
       .catch(err => {
-        console.log('Error getting book from DB', err);
-        res.status(500).json({ message: 'Error getting book from DB' });
+        console.log('Error getting books from DB', err);
+        res.status(500).json({ message: 'Error getting books from DB' });
       });
   });
  
@@ -54,7 +49,7 @@ router.get('/books/:bookId', (req, res, next) => {
     const { bookId } = req.params;
    
     prisma.book
-      .findUnique({ where: { id: bookId }, include: { author: true } }) // <== UPDATE
+      .findUnique({ where: { id: bookId }, include: { Author: true } }) // <== UPDATE
       .then(book => {
         if (!book) {
           res.status(404).json({ message: 'Book not found' });
